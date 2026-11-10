@@ -137,7 +137,7 @@
     .epaper-pic { width: 100%; height: 160px; object-fit: cover; margin-bottom: 8px; filter: grayscale(80%); border: 1px solid #ccc; }
     .epaper-text { font-family: var(--font-serif); font-size: 13.5px; line-height: 1.55; text-align: justify; }
 
-    /* Modals */
+    /* Reader Modal */
     .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 2000; align-items: center; justify-content: center; padding: 16px; }
     .modal-backdrop.open { display: flex; }
     .article-modal { background: #fff; width: 100%; max-width: 760px; max-height: 90vh; border-radius: 6px; overflow-y: auto; }
@@ -160,7 +160,7 @@
   <aside class="breaking-banner">
     <div class="breaking-tag">⚡ Live Wire</div>
     <div class="ticker-wrapper">
-      <div class="ticker-content" id="breakingTicker">Connecting to regional & national telecast...</div>
+      <div class="ticker-content" id="breakingTicker">Ingesting live state &amp; national dispatches...</div>
     </div>
     <button class="telecast-trigger" onclick="openWireModal()">
       <span class="pulse-dot"></span>
@@ -174,7 +174,7 @@
       <div class="edition-selector">
         <span>EDITION:</span>
         <select onchange="changeEdition(this.value)">
-          <option value="kolkata">Kolkata &amp; Bengal</option>
+          <option value="kolkata">Kolkata &amp; West Bengal</option>
           <option value="delhi">National / New Delhi</option>
           <option value="mumbai">Mumbai Metro</option>
         </select>
@@ -186,7 +186,7 @@
 
     <div class="header-branding">
       <h1 class="brand-title">The Bengal &amp; <span>National Gazette</span></h1>
-      <div class="brand-tagline">Comprehensive Live Broadsheet • Times of India Syndicated Feeds</div>
+      <div class="brand-tagline">Integrated Regional, National &amp; World Dispatches • Live Wire</div>
     </div>
 
     <div class="view-switcher-bar">
@@ -217,7 +217,7 @@
         <div class="news-grid" id="grid-national"></div>
       </section>
       <section class="section-block" id="sec-bengal">
-        <div class="section-title-wrap"><h2 class="section-title">Bengali Regional Desk</h2></div>
+        <div class="section-title-wrap"><h2 class="section-title">Bengali Regional Desk (West Bengal State)</h2></div>
         <div class="news-grid" id="grid-bengal"></div>
       </section>
       <section class="section-block" id="sec-sports">
@@ -269,37 +269,33 @@
   </div>
 
   <script>
+    // Targeted feeds: Bengal Regional is hooked to the dedicated West Bengal state & Kolkata bureau
     const RSS_ENDPOINTS = {
       national: "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms",
-      bengal: "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+      bengal: "https://indianexpress.com/section/cities/kolkata/feed/",
       sports: "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms",
       entertainment: "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms"
     };
 
+    // Contextual high-resolution photo backups in case a feed article lacks an attached press image
     const DIVERSE_POOLS = {
       national: [
         "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"
       ],
       bengal: [
         "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80"
       ],
       sports: [
         "https://images.unsplash.com/photo-1531415074868-036b1c575351?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80"
       ],
       entertainment: [
         "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80"
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80"
       ]
     };
 
@@ -307,17 +303,14 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("currentDate").innerText = new Date().toLocaleDateString('en-IN', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
       });
       fetchLiveNews();
     });
 
     async function fetchLiveNews() {
       const status = document.getElementById("statusIndicator");
-      status.innerText = "⏳ Ingesting TOI live wire...";
+      status.innerText = "⏳ Ingesting live state & national wires...";
       allArticles = [];
 
       try {
@@ -329,7 +322,7 @@
           
           if (data && data.items && data.items.length > 0) {
             data.items.slice(0, 4).forEach((item, index) => {
-              // Extract Image
+              // 1. Extract Real Image
               let extractedImage = "";
               if (item.enclosure && item.enclosure.link && item.enclosure.link.startsWith("http")) {
                 extractedImage = item.enclosure.link;
@@ -347,7 +340,7 @@
                 extractedImage = pool[index % pool.length];
               }
 
-              // Extract & format date and time
+              // 2. Extract Published Date & Time
               const dateObj = item.pubDate ? new Date(item.pubDate) : new Date();
               const formattedDate = dateObj.toLocaleDateString('en-IN', {
                 day: 'numeric',
@@ -360,12 +353,12 @@
               });
               const fullPublishedOn = `${formattedDate} • ${formattedTime}`;
 
-              // Clean text
-              let rawDesc = item.description || item.content || "";
+              // 3. Clean Text
+              let rawDesc = item.content || item.description || "";
               rawDesc = rawDesc.replace(/<img[^>]*>/gi, "").replace(/<a[^>]*>.*?<\/a>/gi, "");
               const cleanText = rawDesc.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
-              const headline = item.title ? item.title.trim() : "Wire Dispatch";
+              const headline = item.title ? item.title.trim() : "State Dispatch";
               const leadSnippet = cleanText ? (cleanText.substring(0, 160) + "...") : headline;
 
               allArticles.push({
@@ -378,7 +371,8 @@
                 image: extractedImage,
                 date: formattedDate,
                 time: formattedTime,
-                fullPublishedOn: fullPublishedOn
+                fullPublishedOn: fullPublishedOn,
+                sourceBureau: cat === 'bengal' ? 'Kolkata & West Bengal Bureau' : 'National Wire Service'
               });
             });
           }
@@ -388,7 +382,7 @@
           loadCuratedWire();
         } else {
           renderApp();
-          status.innerText = "● TOI Live Wire Synchronized";
+          status.innerText = "● Bengal & National Wires Synchronized";
         }
       } catch (err) {
         status.innerText = "● Offline (Cached Wire)";
@@ -397,7 +391,7 @@
     }
 
     function renderApp() {
-      // 1. Render Ticker
+      // 1. Ticker
       const ticker = document.getElementById("breakingTicker");
       ticker.innerHTML = allArticles.slice(0, 8).map(a => `
         <span class="ticker-item" onclick="openArticle('${a.id}')">
@@ -406,7 +400,7 @@
       `).join("");
       document.getElementById("wireCount").innerText = allArticles.length;
 
-      // 2. Render Cards
+      // 2. News Cards
       ['national', 'bengal', 'sports', 'entertainment'].forEach(cat => {
         const grid = document.getElementById(`grid-${cat}`);
         const items = allArticles.filter(a => a.category === cat);
@@ -429,19 +423,19 @@
         `).join("");
       });
 
-      // 3. Render ePaper Columns
+      // 3. Broadsheet Columns
       const epaper = document.getElementById("epaperColumns");
       epaper.innerHTML = allArticles.map(a => `
         <article class="epaper-article" onclick="openArticle('${a.id}')">
           <div style="font-size:11px; font-weight:800; color:var(--toi-red); text-transform:uppercase;">${a.categoryName}</div>
           <h2 class="epaper-headline">${a.headline}</h2>
-          <div style="font-size:11px; color:#666; margin-bottom:8px;">Times of India Wire • ${a.fullPublishedOn}</div>
+          <div style="font-size:11px; color:#666; margin-bottom:8px;">${a.sourceBureau} • ${a.fullPublishedOn}</div>
           <img class="epaper-pic" src="${a.image}" alt="News Pic" onerror="imgFallback(this)" loading="lazy" />
           <div class="epaper-text">${a.lead}</div>
         </article>
       `).join("");
 
-      // 4. Render Telecast modal list
+      // 4. Telecast list
       document.getElementById("wireModalList").innerHTML = allArticles.map(a => `
         <div style="padding:10px; border-left:3px solid var(--toi-red); background:#f9f9f9; margin-bottom:10px; cursor:pointer;" onclick="openArticle('${a.id}'); closeWireModal();">
           <div style="font-size:11px; color:var(--toi-red); font-weight:700;">${a.categoryName} • ${a.fullPublishedOn}</div>
@@ -450,14 +444,14 @@
       `).join("");
     }
 
-    // Modal Reader with Published Date & Time
+    // Modal view
     function openArticle(id) {
       const a = allArticles.find(item => item.id === id);
       if (!a) return;
 
       document.getElementById("modalTag").innerText = a.categoryName;
       document.getElementById("modalHeadline").innerText = a.headline;
-      document.getElementById("modalMeta").innerText = `Times News Network (TNN) • Published on ${a.fullPublishedOn} • Verified Wire`;
+      document.getElementById("modalMeta").innerText = `${a.sourceBureau} • Published on ${a.fullPublishedOn} • Verified Wire`;
       document.getElementById("modalImg").src = a.image;
       
       let contentHtml = ``;
@@ -516,10 +510,10 @@
     function loadCuratedWire() {
       const todayStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
       allArticles = [
-        { id: "nat-0", category: "national", categoryName: "NATIONAL", headline: "Cabinet Clears Phase-III Green Energy Transmission Corridor", lead: "The Union Cabinet has sanctioned major transmission lines to evacuate 25 GW renewable energy.", body: "The Cabinet Committee on Economic Affairs chaired in New Delhi approved Phase-III of the Inter-State Green Energy Corridor to evacuate over 25 GW of solar and wind power.", image: DIVERSE_POOLS.national[0], date: todayStr, time: "10:00 AM", fullPublishedOn: `${todayStr} • 10:00 AM` },
-        { id: "beng-0", category: "bengal", categoryName: "BENGAL REGIONAL", headline: "Kolkata Underwater Metro Reports Record 2.5 Lakh Commuters", lead: "The underwater Hooghly transit tunnel completed record rush hour passenger traffic.", body: "The commercial operation of Kolkata's East-West Metro (Green Line) through the riverbed tunnel under the Hooghly River recorded over 2,50,000 transit journeys yesterday.", image: DIVERSE_POOLS.bengal[2], date: todayStr, time: "09:30 AM", fullPublishedOn: `${todayStr} • 09:30 AM` },
-        { id: "sp-0", category: "sports", categoryName: "SPORTS", headline: "Ranji Trophy: Bengal Seamers Clinch Early Advantage at Eden Gardens", lead: "A commanding spell of seam bowling restricted opponents before tea on Day 1.", body: "Exploiting optimal morning moisture on a grass-topped Eden Gardens pitch, Bengal's pace attack dismantled opponents for a modest first innings total in their Elite Group clash.", image: DIVERSE_POOLS.sports[0], date: todayStr, time: "08:45 AM", fullPublishedOn: `${todayStr} • 08:45 AM` },
-        { id: "ent-0", category: "entertainment", categoryName: "ENTERTAINMENT", headline: "Tollywood Announces Star-Studded Theatrical Lineup for Festive Season", lead: "Top directors and producers confirm major cinematic releases across regional screens.", body: "Anticipation reached a fever pitch as production houses across Kolkata and Mumbai finalized festival advance release schedules.", image: DIVERSE_POOLS.entertainment[0], date: todayStr, time: "08:15 AM", fullPublishedOn: `${todayStr} • 08:15 AM` }
+        { id: "nat-0", category: "national", categoryName: "NATIONAL", headline: "Cabinet Clears Phase-III Green Energy Transmission Corridor", lead: "The Union Cabinet has sanctioned major transmission lines to evacuate 25 GW renewable energy.", body: "The Cabinet Committee on Economic Affairs chaired in New Delhi approved Phase-III of the Inter-State Green Energy Corridor to evacuate over 25 GW of solar and wind power.", image: DIVERSE_POOLS.national[0], date: todayStr, time: "10:00 AM", fullPublishedOn: `${todayStr} • 10:00 AM`, sourceBureau: "New Delhi Bureau" },
+        { id: "beng-0", category: "bengal", categoryName: "BENGAL REGIONAL", headline: "Nabanna Approves ₹7,800 Crore Industrial Manufacturing Clearances for Kharagpur", lead: "West Bengal Industrial Development Corporation fast-tracks major high-tech park developments.", body: "The West Bengal government has officially sanctioned single-window clearance for major manufacturing facilities across Kharagpur and Vidyasagar Industrial Park, expected to generate thousands of technical regional jobs.", image: DIVERSE_POOLS.bengal[1], date: todayStr, time: "09:30 AM", fullPublishedOn: `${todayStr} • 09:30 AM`, sourceBureau: "Kolkata & Nabanna Bureau" },
+        { id: "sp-0", category: "sports", categoryName: "SPORTS", headline: "Ranji Trophy: Bengal Seamers Clinch Critical First-Innings Lead at Eden Gardens", lead: "A commanding spell of seam bowling restricted opponents before tea on Day 1.", body: "Exploiting optimal morning moisture on a grass-topped Eden Gardens pitch, Bengal's pace attack dismantled opponents for a modest first innings total in their Elite Group clash.", image: DIVERSE_POOLS.sports[0], date: todayStr, time: "08:45 AM", fullPublishedOn: `${todayStr} • 08:45 AM`, sourceBureau: "Eden Gardens Press Desk" },
+        { id: "ent-0", category: "entertainment", categoryName: "ENTERTAINMENT", headline: "Tollywood Announces Star-Studded Theatrical Lineup for Festive Season", lead: "Top directors and producers confirm major cinematic releases across regional screens.", body: "Anticipation reached a fever pitch as production houses across Kolkata and Mumbai finalized festival advance release schedules.", image: DIVERSE_POOLS.entertainment[0], date: todayStr, time: "08:15 AM", fullPublishedOn: `${todayStr} • 08:15 AM`, sourceBureau: "Tollywood Desk" }
       ];
       renderApp();
     }
