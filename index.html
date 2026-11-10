@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>The Bengal & National Gazette | Live & ePaper</title>
   
-  <!-- Typography -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Noto+Serif+Bengali:wght@400;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -234,7 +234,7 @@
 
     <div class="header-branding">
       <h1 class="brand-title">The Bengal &amp; <span>National Gazette</span></h1>
-      <div class="brand-tagline">Live Broadsheet Newsroom • Headline-Aware AI Editorial Wire</div>
+      <div class="brand-tagline">Live Broadsheet Newsroom • Intelligent Editorial Photo Wire</div>
     </div>
 
     <div class="view-switcher-bar">
@@ -346,28 +346,67 @@
     };
 
     // =========================================================================
-    // OPTION 1: LIVE ON-THE-FLY AI EDITORIAL IMAGE ENGINE
-    // Creates custom, photojournalistic images matching the story headline
+    // TOPIC-INTELLIGENT EDITORIAL IMAGE ENGINE (NO API LIMITS, NO WAITING)
+    // Inspects story headlines and pairs them with authentic photojournalism
     // =========================================================================
-    function generateHeadlineRelevantAIImage(headline, category, isBengali, seedIndex = 1) {
-      let prompt = "";
+    const EDITORIAL_LIBRARY = {
+      court: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
+      parliament: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80",
+      metro_transit: "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80",
+      kolkata_bridge: "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80",
+      industry_tech: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+      cricket: "https://images.unsplash.com/photo-1531415074868-036b1c575351?auto=format&fit=crop&w=800&q=80",
+      football_stadium: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
+      cinema_shoot: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80",
+      music_festival: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+      weather_rain: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=800&q=80",
+      police_crime: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=800&q=80",
+      bengal_rural: "https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=800&q=80"
+    };
 
-      if (isBengali) {
-        // High-context journalistic prompt for West Bengal dispatches
-        prompt = `editorial newspaper photograph, West Bengal Kolkata news report, press photojournalism, authentic candid Indian news shot, documentary 4k`;
-      } else {
-        // Strip punctuation and isolate core story keywords
-        const cleanHeadline = headline
-          .replace(/[^a-zA-Z0-9\s]/g, " ")
-          .replace(/\s+/g, " ")
-          .trim()
-          .slice(0, 75);
+    function getIntelligentEditorialImage(headline, category, index) {
+      const h = headline.toLowerCase();
 
-        prompt = `editorial photojournalism press photo of ${cleanHeadline}, realistic Indian newspaper picture, documentary press photography, natural lighting, high detail`;
+      // Topic Keyword Matching
+      if (h.includes("court") || h.includes("judge") || h.includes("cbi") || h.includes("ed") || h.includes("আইন") || h.includes("আদালত")) {
+        return EDITORIAL_LIBRARY.court;
+      }
+      if (h.includes("metro") || h.includes("train") || h.includes("rail") || h.includes("tunnel") || h.includes("মেট্রো")) {
+        return EDITORIAL_LIBRARY.metro_transit;
+      }
+      if (h.includes("cricket") || h.includes("ranji") || h.includes("ipl") || h.includes("wicket") || h.includes("ক্রিকেট")) {
+        return EDITORIAL_LIBRARY.cricket;
+      }
+      if (h.includes("football") || h.includes("mohun bagan") || h.includes("east bengal") || h.includes("derby") || h.includes("ফুটবল")) {
+        return EDITORIAL_LIBRARY.football_stadium;
+      }
+      if (h.includes("film") || h.includes("cinema") || h.includes("tollywood") || h.includes("actor") || h.includes("সিনেমা") || h.includes("ছবি")) {
+        return EDITORIAL_LIBRARY.cinema_shoot;
+      }
+      if (h.includes("weather") || h.includes("rain") || h.includes("cyclone") || h.includes("বৃষ্টি") || h.includes("ঝড়")) {
+        return EDITORIAL_LIBRARY.weather_rain;
+      }
+      if (h.includes("police") || h.includes("arrest") || h.includes("murder") || h.includes("police") || h.includes("গ্রেফতার")) {
+        return EDITORIAL_LIBRARY.police_crime;
+      }
+      if (h.includes("cabinet") || h.includes("minister") || h.includes("pm") || h.includes("bjp") || h.includes("tmc") || h.includes("modi") || h.includes("mamata")) {
+        return category === 'bengal' ? EDITORIAL_LIBRARY.kolkata_bridge : EDITORIAL_LIBRARY.parliament;
       }
 
-      const seed = Math.abs(seedIndex * 1337 + headline.length * 42);
-      return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=450&nologo=true&seed=${seed}`;
+      // Default by section (varied by index so adjacent cards differ)
+      if (category === 'bengal') {
+        const wbSet = [EDITORIAL_LIBRARY.kolkata_bridge, EDITORIAL_LIBRARY.industry_tech, EDITORIAL_LIBRARY.bengal_rural, EDITORIAL_LIBRARY.metro_transit];
+        return wbSet[index % wbSet.length];
+      }
+      if (category === 'sports') {
+        return index % 2 === 0 ? EDITORIAL_LIBRARY.cricket : EDITORIAL_LIBRARY.football_stadium;
+      }
+      if (category === 'entertainment') {
+        return index % 2 === 0 ? EDITORIAL_LIBRARY.cinema_shoot : EDITORIAL_LIBRARY.music_festival;
+      }
+      
+      const natSet = [EDITORIAL_LIBRARY.parliament, EDITORIAL_LIBRARY.court, EDITORIAL_LIBRARY.industry_tech];
+      return natSet[index % natSet.length];
     }
 
     let allArticles = [];
@@ -401,7 +440,7 @@
 
     async function fetchLiveNews() {
       const status = document.getElementById("statusIndicator");
-      status.innerText = "⏳ Ingesting feeds & rendering AI editorial wire...";
+      status.innerText = "⏳ Ingesting feeds & editorial wire...";
       allArticles = [];
 
       const activeCategories = [
@@ -433,7 +472,7 @@
               const headline = (item.title || "News Dispatch").trim();
               const isBengaliArticle = (cat.key === 'bengal' && currentAbpLang === 'bn');
 
-              // 1. Inspect feed for a genuine press image URL
+              // 1. Inspect RSS payload for direct press image
               let extractedImage = "";
               if (item.enclosure && item.enclosure.link && item.enclosure.link.startsWith("http")) {
                 extractedImage = item.enclosure.link;
@@ -446,9 +485,9 @@
                 }
               }
 
-              // 2. If no photo or stripped by publisher, dynamically generate a matching AI editorial image
+              // 2. Intelligent Topic-Matching Editorial Image (Fast, No Limits)
               if (!extractedImage) {
-                extractedImage = generateHeadlineRelevantAIImage(headline, cat.key, isBengaliArticle, index + 1);
+                extractedImage = getIntelligentEditorialImage(headline, cat.key, index);
               }
 
               const dateObj = item.pubDate ? new Date(item.pubDate) : new Date();
@@ -485,7 +524,6 @@
         }
       }
 
-      // Auto-recovery fallback for any section
       ['national', 'bengal', 'sports', 'entertainment'].forEach(k => {
         if (allArticles.filter(a => a.category === k).length === 0) {
           injectAutoRecovery(k);
@@ -493,7 +531,7 @@
       });
 
       renderApp();
-      status.innerText = "● Editorial AI Wire Active";
+      status.innerText = "● Editorial Photo Wire Connected";
     }
 
     function injectAutoRecovery(categoryKey) {
@@ -508,7 +546,7 @@
             headline: "Union Cabinet Clears Phase-III Green Energy Transmission Corridor",
             lead: "The Cabinet Committee on Economic Affairs approved ₹42,000 Crore to evacuate 25 GW renewable capacity.",
             body: "The Cabinet Committee on Economic Affairs chaired in New Delhi approved Phase-III of the Inter-State Green Energy Corridor to evacuate over 25 GW of solar and wind power.",
-            image: generateHeadlineRelevantAIImage("Cabinet Green Energy Solar Wind Transmission Grid", "national", false, 11),
+            image: EDITORIAL_LIBRARY.parliament,
             date: todayStr,
             time: "10:00 AM",
             relativeTime: "20m ago",
@@ -525,7 +563,7 @@
             headline: "খড়গপুর ও মেদিনীপুরে নতুন শিল্প প্রকল্পের দ্রুত ছাড়পত্র দিল নবান্ন",
             lead: "রাজ্যের শিল্প পরিকাঠামোয় বড় অগ্রগতি। বিদ্যাসাগর শিল্পতালুকে ব্যাটারি ও সেমিকন্ডাক্টর কারখানা।",
             body: "পশ্চিমবঙ্গ সরকারের একক জানলা ব্যবস্থার মাধ্যমে মেদিনীপুর ও খড়গপুর শিল্প এলাকায় নতুন বিনিয়োগের অনুমতি দেওয়া হয়েছে।",
-            image: generateHeadlineRelevantAIImage("Kharagpur Industrial Hub Nabanna Bengal", "bengal", true, 22),
+            image: EDITORIAL_LIBRARY.industry_tech,
             date: todayStr,
             time: "11:30 AM",
             relativeTime: "15m ago",
@@ -541,7 +579,7 @@
             headline: "Nabanna Fast-Tracks ₹7,800 Crore Manufacturing Hub in Kharagpur",
             lead: "Single-window clearances approved for high-tech manufacturing in West Midnapore.",
             body: "The West Bengal government has cleared major manufacturing facilities at Vidyasagar Industrial Park.",
-            image: generateHeadlineRelevantAIImage("Nabanna Secretariat Kolkata Industry Manufacturing", "bengal", false, 33),
+            image: EDITORIAL_LIBRARY.industry_tech,
             date: todayStr,
             time: "11:30 AM",
             relativeTime: "15m ago",
@@ -558,7 +596,7 @@
             headline: "Ranji Trophy: Bengal Seamers Clinch Critical Advantage at Eden Gardens",
             lead: "A commanding spell of seam bowling restricted opponents before tea on Day 1.",
             body: "Exploiting optimal morning moisture on a grass-topped Eden Gardens pitch, Bengal's pace attack dismantled opponents in their Elite Group clash.",
-            image: generateHeadlineRelevantAIImage("Eden Gardens Cricket Match Bowler Ranji Trophy", "sports", false, 44),
+            image: EDITORIAL_LIBRARY.cricket,
             date: todayStr,
             time: "08:45 AM",
             relativeTime: "1h ago",
@@ -575,7 +613,7 @@
             headline: "Tollywood Announces Star-Studded Theatrical Lineup for Grand Festive Slates",
             lead: "Top directors and producers confirm major cinematic releases across regional screens.",
             body: "Anticipation reached a fever pitch as production houses finalized festival advance release schedules.",
-            image: generateHeadlineRelevantAIImage("Cinema Shooting Film Set Camera Tollywood Director", "entertainment", false, 55),
+            image: EDITORIAL_LIBRARY.cinema_shoot,
             date: todayStr,
             time: "08:15 AM",
             relativeTime: "2h ago",
@@ -704,8 +742,7 @@
 
     function imgFallback(img) {
       img.onerror = null;
-      // High-resolution neutral editorial press fallback
-      img.src = "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=800&q=80";
+      img.src = EDITORIAL_LIBRARY.kolkata_bridge;
     }
 
     function changeEdition(val) {
