@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>The Bengal & National Gazette | Live & ePaper</title>
   
-  <!-- Fonts -->
+  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Noto+Serif+Bengali:wght@400;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -234,7 +234,7 @@
 
     <div class="header-branding">
       <h1 class="brand-title">The Bengal &amp; <span>National Gazette</span></h1>
-      <div class="brand-tagline">Live Broadsheet Newsroom • All-India &amp; State Feeds</div>
+      <div class="brand-tagline">Live Broadsheet Newsroom • Headline-Aware AI Editorial Wire</div>
     </div>
 
     <div class="view-switcher-bar">
@@ -301,7 +301,7 @@
       <div class="epaper-page-header">
         <span>The Bengal &amp; National Gazette</span>
         <span>Daily Broadsheet Edition</span>
-        <span>Verified Public Wire</span>
+        <span>Verified Public Photographic Wire</span>
       </div>
       <div class="epaper-columns" id="epaperColumns"></div>
     </div>
@@ -337,7 +337,6 @@
   <script>
     let currentAbpLang = 'bn';
 
-    // Reliable public syndication feeds (never blocked by CORS or Cloudflare)
     const RSS_ENDPOINTS = {
       national: "https://news.google.com/rss/headlines/section/topic/NATION.IN?ceid=IN:en&oc=11",
       bengal_bn: "https://news.google.com/rss/search?q=site:anandabazar.com+OR+%22%E0%A6%86%E0%A6%A8%E0%A6%A8%E0%A7%8D%E0%A6%A6%E0%A6%AC%E0%A6%BE%E0%A6%9C%E0%A6%BE%E0%A6%B0%22+when:3d&hl=bn&gl=IN&ceid=IN:bn",
@@ -346,32 +345,30 @@
       entertainment: "https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?ceid=IN:en&oc=11"
     };
 
-    const DIVERSE_POOLS = {
-      national: [
-        "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80"
-      ],
-      bengal: [
-        "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=800&q=80"
-      ],
-      sports: [
-        "https://images.unsplash.com/photo-1531415074868-036b1c575351?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80"
-      ],
-      entertainment: [
-        "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80"
-      ]
-    };
+    // =========================================================================
+    // OPTION 1: LIVE ON-THE-FLY AI EDITORIAL IMAGE ENGINE
+    // Creates custom, photojournalistic images matching the story headline
+    // =========================================================================
+    function generateHeadlineRelevantAIImage(headline, category, isBengali, seedIndex = 1) {
+      let prompt = "";
+
+      if (isBengali) {
+        // High-context journalistic prompt for West Bengal dispatches
+        prompt = `editorial newspaper photograph, West Bengal Kolkata news report, press photojournalism, authentic candid Indian news shot, documentary 4k`;
+      } else {
+        // Strip punctuation and isolate core story keywords
+        const cleanHeadline = headline
+          .replace(/[^a-zA-Z0-9\s]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 75);
+
+        prompt = `editorial photojournalism press photo of ${cleanHeadline}, realistic Indian newspaper picture, documentary press photography, natural lighting, high detail`;
+      }
+
+      const seed = Math.abs(seedIndex * 1337 + headline.length * 42);
+      return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=450&nologo=true&seed=${seed}`;
+    }
 
     let allArticles = [];
 
@@ -404,7 +401,7 @@
 
     async function fetchLiveNews() {
       const status = document.getElementById("statusIndicator");
-      status.innerText = "⏳ Ingesting live dispatches...";
+      status.innerText = "⏳ Ingesting feeds & rendering AI editorial wire...";
       allArticles = [];
 
       const activeCategories = [
@@ -422,7 +419,6 @@
       for (const cat of activeCategories) {
         try {
           const cacheBuster = Date.now();
-          // Correct URL separator handling: if feed has ?, use &, else use ?
           const separator = cat.feed.includes('?') ? '&' : '?';
           const targetUrl = `${cat.feed}${separator}_cb=${cacheBuster}`;
           const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(targetUrl)}&_t=${cacheBuster}`;
@@ -434,6 +430,10 @@
             data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
             data.items.slice(0, 4).forEach((item, index) => {
+              const headline = (item.title || "News Dispatch").trim();
+              const isBengaliArticle = (cat.key === 'bengal' && currentAbpLang === 'bn');
+
+              // 1. Inspect feed for a genuine press image URL
               let extractedImage = "";
               if (item.enclosure && item.enclosure.link && item.enclosure.link.startsWith("http")) {
                 extractedImage = item.enclosure.link;
@@ -446,29 +446,20 @@
                 }
               }
 
+              // 2. If no photo or stripped by publisher, dynamically generate a matching AI editorial image
               if (!extractedImage) {
-                const pool = DIVERSE_POOLS[cat.key];
-                extractedImage = pool[index % pool.length];
+                extractedImage = generateHeadlineRelevantAIImage(headline, cat.key, isBengaliArticle, index + 1);
               }
 
               const dateObj = item.pubDate ? new Date(item.pubDate) : new Date();
               const relativeTimeStr = formatRelativeTime(dateObj);
-              const formattedDate = dateObj.toLocaleDateString('en-IN', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-              });
-              const formattedTime = dateObj.toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit'
-              });
-              const fullPublishedOn = `${formattedDate} • ${formattedTime}`;
+              const formattedDate = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+              const formattedTime = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
               let rawDesc = item.content || item.description || "";
               rawDesc = rawDesc.replace(/<img[^>]*>/gi, "").replace(/<a[^>]*>.*?<\/a>/gi, "");
               const cleanText = rawDesc.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
-              const headline = (item.title || "News Dispatch").trim();
               const leadSnippet = cleanText ? (cleanText.substring(0, 160) + "...") : headline;
 
               allArticles.push({
@@ -483,9 +474,9 @@
                 time: formattedTime,
                 relativeTime: relativeTimeStr,
                 timestamp: dateObj.getTime(),
-                fullPublishedOn: fullPublishedOn,
+                fullPublishedOn: `${formattedDate} • ${formattedTime}`,
                 sourceBureau: cat.bureau,
-                isBengali: (cat.key === 'bengal' && currentAbpLang === 'bn')
+                isBengali: isBengaliArticle
               });
             });
           }
@@ -494,16 +485,15 @@
         }
       }
 
-      // SECTION-LEVEL AUTO-RECOVERY FOR ALL 4 SECTIONS
+      // Auto-recovery fallback for any section
       ['national', 'bengal', 'sports', 'entertainment'].forEach(k => {
-        const count = allArticles.filter(a => a.category === k).length;
-        if (count === 0) {
+        if (allArticles.filter(a => a.category === k).length === 0) {
           injectAutoRecovery(k);
         }
       });
 
       renderApp();
-      status.innerText = "● All Feeds Live & Connected";
+      status.innerText = "● Editorial AI Wire Active";
     }
 
     function injectAutoRecovery(categoryKey) {
@@ -515,30 +505,15 @@
             id: "nat-rec-1",
             category: "national",
             categoryName: "NATIONAL",
-            headline: "Union Cabinet Clears Phase-III Green Energy Transmission Corridor Outlay",
-            lead: "The Cabinet Committee on Economic Affairs approved ₹42,000 Crore to evacuate 25 GW of renewable solar and wind capacity.",
-            body: "The Cabinet Committee on Economic Affairs chaired in New Delhi approved Phase-III of the Inter-State Green Energy Corridor to evacuate over 25 GW of solar and wind power. The infrastructure will deploy state-of-the-art HVDC sub-stations connecting hybrid energy corridors across national grids.",
-            image: DIVERSE_POOLS.national[0],
+            headline: "Union Cabinet Clears Phase-III Green Energy Transmission Corridor",
+            lead: "The Cabinet Committee on Economic Affairs approved ₹42,000 Crore to evacuate 25 GW renewable capacity.",
+            body: "The Cabinet Committee on Economic Affairs chaired in New Delhi approved Phase-III of the Inter-State Green Energy Corridor to evacuate over 25 GW of solar and wind power.",
+            image: generateHeadlineRelevantAIImage("Cabinet Green Energy Solar Wind Transmission Grid", "national", false, 11),
             date: todayStr,
             time: "10:00 AM",
             relativeTime: "20m ago",
             fullPublishedOn: `${todayStr} • 10:00 AM`,
             sourceBureau: "New Delhi Bureau",
-            isBengali: false
-          },
-          {
-            id: "nat-rec-2",
-            category: "national",
-            categoryName: "NATIONAL",
-            headline: "Supreme Court Directs Nationwide Geo-Tagging of Freshwater Wetlands & River Floodplains",
-            lead: "A three-judge bench issued binding directives to state wetland authorities to preserve peri-urban natural floodplains.",
-            body: "Hearing a critical environmental petition concerning urban flooding, the Supreme Court directed state wetland bodies to compile tamper-proof digital boundary registries to safeguard peri-urban water catchment bodies.",
-            image: DIVERSE_POOLS.national[2],
-            date: todayStr,
-            time: "09:15 AM",
-            relativeTime: "1h ago",
-            fullPublishedOn: `${todayStr} • 09:15 AM`,
-            sourceBureau: "Legal Bureau, New Delhi",
             isBengali: false
           }
         ],
@@ -548,28 +523,13 @@
             category: "bengal",
             categoryName: "আনন্দবাজার পত্রিকা",
             headline: "খড়গপুর ও মেদিনীপুরে নতুন শিল্প প্রকল্পের দ্রুত ছাড়পত্র দিল নবান্ন",
-            lead: "রাজ্যের শিল্প পরিকাঠামোয় বড় অগ্রগতি। বিদ্যাসাগর শিল্পতালুকে ব্যাটারি ও সেমিকন্ডাক্টর কারখানার ভিত্তিপ্রস্তর শীঘ্রই।",
-            body: "পশ্চিমবঙ্গ সরকারের একক জানলা ব্যবস্থার মাধ্যমে মেদিনীপুর ও খড়গপুর শিল্প এলাকায় নতুন বিনিয়োগের অনুমতি দেওয়া হয়েছে। রাজ্যের তথ্যপ্রযুক্তি ও উৎপাদন ক্ষেত্রে কয়েক হাজার কাজের সুযোগ তৈরি হবে বলে নবান্ন সূত্রে খবর।",
-            image: DIVERSE_POOLS.bengal[1],
+            lead: "রাজ্যের শিল্প পরিকাঠামোয় বড় অগ্রগতি। বিদ্যাসাগর শিল্পতালুকে ব্যাটারি ও সেমিকন্ডাক্টর কারখানা।",
+            body: "পশ্চিমবঙ্গ সরকারের একক জানলা ব্যবস্থার মাধ্যমে মেদিনীপুর ও খড়গপুর শিল্প এলাকায় নতুন বিনিয়োগের অনুমতি দেওয়া হয়েছে।",
+            image: generateHeadlineRelevantAIImage("Kharagpur Industrial Hub Nabanna Bengal", "bengal", true, 22),
             date: todayStr,
             time: "11:30 AM",
             relativeTime: "15m ago",
             fullPublishedOn: `${todayStr} • 11:30 AM`,
-            sourceBureau: "আনন্দবাজার পত্রিকা ব্যুরো, কলকাতা",
-            isBengali: true
-          },
-          {
-            id: "beng-rec-2",
-            category: "bengal",
-            categoryName: "আনন্দবাজার পত্রিকা",
-            headline: "কলকাতা মেট্রোর গ্রিন লাইনে রেকর্ড যাত্রী, বাড়তি রেক চালানোর সিদ্ধান্ত",
-            lead: "গঙ্গার তলা দিয়ে হাওড়া-এসপ্ল্যানেড রুটে যাত্রী সংখ্যা আড়াই লক্ষ ছাড়াল। পিক আওয়ারে মেট্রোর সংখ্যা বাড়ানোর পরিকল্পনা।",
-            body: "হাওড়া ও কলকাতার মধ্যে দ্রুত যাতায়াতের জন্য ইস্ট-ওয়েস্ট মেট্রো এখন শহরের প্রধান ভরসা। অফিস টাইমে উপচে পড়া ভিড় সামাল দিতে অতিরিক্ত পরিষেবা শুরু করতে চলেছে মেট্রো রেল কর্তৃপক্ষ।",
-            image: DIVERSE_POOLS.bengal[2],
-            date: todayStr,
-            time: "10:45 AM",
-            relativeTime: "45m ago",
-            fullPublishedOn: `${todayStr} • 10:45 AM`,
             sourceBureau: "আনন্দবাজার পত্রিকা ব্যুরো, কলকাতা",
             isBengali: true
           }
@@ -578,29 +538,14 @@
             id: "beng-rec-en-1",
             category: "bengal",
             categoryName: "The Telegraph (ABP)",
-            headline: "Nabanna Fast-Tracks ₹7,800 Crore Industrial Manufacturing Hub in Kharagpur",
-            lead: "Single-window clearances approved for high-tech manufacturing and clean energy units in West Midnapore.",
-            body: "The West Bengal government has cleared major manufacturing facilities at Vidyasagar Industrial Park, expected to create extensive regional technical employment.",
-            image: DIVERSE_POOLS.bengal[1],
+            headline: "Nabanna Fast-Tracks ₹7,800 Crore Manufacturing Hub in Kharagpur",
+            lead: "Single-window clearances approved for high-tech manufacturing in West Midnapore.",
+            body: "The West Bengal government has cleared major manufacturing facilities at Vidyasagar Industrial Park.",
+            image: generateHeadlineRelevantAIImage("Nabanna Secretariat Kolkata Industry Manufacturing", "bengal", false, 33),
             date: todayStr,
             time: "11:30 AM",
             relativeTime: "15m ago",
             fullPublishedOn: `${todayStr} • 11:30 AM`,
-            sourceBureau: "The Telegraph Bureau, Kolkata",
-            isBengali: false
-          },
-          {
-            id: "beng-rec-en-2",
-            category: "bengal",
-            categoryName: "The Telegraph (ABP)",
-            headline: "Kolkata Underwater Metro Green Line Registers Record Passenger Volumes",
-            lead: "Surge in daily commuters along the Hooghly riverbed corridor prompts frequency boost.",
-            body: "Metro Railway announced additional train services during peak hours as the underwater tunnel transit links recorded over 2.5 lakh journeys.",
-            image: DIVERSE_POOLS.bengal[2],
-            date: todayStr,
-            time: "10:45 AM",
-            relativeTime: "45m ago",
-            fullPublishedOn: `${todayStr} • 10:45 AM`,
             sourceBureau: "The Telegraph Bureau, Kolkata",
             isBengali: false
           }
@@ -610,30 +555,15 @@
             id: "sp-rec-1",
             category: "sports",
             categoryName: "SPORTS",
-            headline: "Ranji Trophy: Bengal Seamers Clinch Critical First-Innings Lead at Eden Gardens",
-            lead: "A commanding spell of seam bowling restricted opponents before tea on Day 1 on a grass-topped pitch.",
-            body: "Exploiting optimal morning moisture on a grass-topped Eden Gardens pitch, Bengal's pace attack dismantled opponents for a modest first innings total in their Elite Group clash. Bengal's opening seamers maintained an immaculate fifth-stump line.",
-            image: DIVERSE_POOLS.sports[0],
+            headline: "Ranji Trophy: Bengal Seamers Clinch Critical Advantage at Eden Gardens",
+            lead: "A commanding spell of seam bowling restricted opponents before tea on Day 1.",
+            body: "Exploiting optimal morning moisture on a grass-topped Eden Gardens pitch, Bengal's pace attack dismantled opponents in their Elite Group clash.",
+            image: generateHeadlineRelevantAIImage("Eden Gardens Cricket Match Bowler Ranji Trophy", "sports", false, 44),
             date: todayStr,
             time: "08:45 AM",
             relativeTime: "1h ago",
             fullPublishedOn: `${todayStr} • 08:45 AM`,
             sourceBureau: "Eden Gardens Press Desk",
-            isBengali: false
-          },
-          {
-            id: "sp-rec-2",
-            category: "sports",
-            categoryName: "SPORTS",
-            headline: "ISL Derby: Mohun Bagan Super Giant Edge Past East Bengal in Stoppage-Time Thriller",
-            lead: "A 94th-minute header from an inswinging corner sealed a dramatic 2-1 derby victory before 60,000 spectators.",
-            body: "The Salt Lake Stadium erupted on Friday night as Mohun Bagan Super Giant pulled off an exhilarating 2-1 victory over arch-rivals East Bengal in the Indian Super League to ascend to the top of the table.",
-            image: DIVERSE_POOLS.sports[1],
-            date: todayStr,
-            time: "07:30 AM",
-            relativeTime: "2h ago",
-            fullPublishedOn: `${todayStr} • 07:30 AM`,
-            sourceBureau: "Salt Lake Stadium Bureau",
             isBengali: false
           }
         ],
@@ -643,29 +573,14 @@
             category: "entertainment",
             categoryName: "ENTERTAINMENT",
             headline: "Tollywood Announces Star-Studded Theatrical Lineup for Grand Festive Slates",
-            lead: "Top directors and producers confirm major cinematic releases across regional and national screens.",
-            body: "Anticipation reached a fever pitch as production houses across Kolkata and Mumbai finalized festival advance release schedules. Industry trade analysts reported strong cinema distribution bookings.",
-            image: DIVERSE_POOLS.entertainment[0],
+            lead: "Top directors and producers confirm major cinematic releases across regional screens.",
+            body: "Anticipation reached a fever pitch as production houses finalized festival advance release schedules.",
+            image: generateHeadlineRelevantAIImage("Cinema Shooting Film Set Camera Tollywood Director", "entertainment", false, 55),
             date: todayStr,
             time: "08:15 AM",
             relativeTime: "2h ago",
             fullPublishedOn: `${todayStr} • 08:15 AM`,
             sourceBureau: "Tollywood Desk",
-            isBengali: false
-          },
-          {
-            id: "ent-rec-2",
-            category: "entertainment",
-            categoryName: "ENTERTAINMENT",
-            headline: "Ranbir Kapoor & Yash's Epic 'Ramayana' Opens Global IMAX Advance Bookings",
-            lead: "Early preview tickets in international territories meet sold-out responses across major metropolitan hubs.",
-            body: "Advance ticket windows opened across North America and the UK for the mythological opus 'Ramayana'. Trade analysts reported sold-out IMAX shows within minutes in London and Toronto.",
-            image: DIVERSE_POOLS.entertainment[1],
-            date: todayStr,
-            time: "06:45 AM",
-            relativeTime: "3h ago",
-            fullPublishedOn: `${todayStr} • 06:45 AM`,
-            sourceBureau: "National Cinema Desk",
             isBengali: false
           }
         ]
@@ -789,7 +704,8 @@
 
     function imgFallback(img) {
       img.onerror = null;
-      img.src = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80";
+      // High-resolution neutral editorial press fallback
+      img.src = "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=800&q=80";
     }
 
     function changeEdition(val) {
